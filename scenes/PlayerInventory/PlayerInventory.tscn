@@ -1,0 +1,59 @@
+[gd_scene load_steps=3 format=3 uid="uid://crh0o3oqfmlro"]
+
+[ext_resource type="Script" uid="uid://dg3t4lnge5e20" path="res://scenes/PlayerInventory/PlayerInventory.gd" id="1_tuj02"]
+[ext_resource type="PackedScene" uid="uid://cfngo1tt54ed2" path="res://scenes/PlayerInventory/InventorySlot.tscn" id="2_c8jhu"]
+
+[node name="PlayerInventory" type="CanvasLayer"]
+script = ExtResource("1_tuj02")
+
+[node name="Background Darkner" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -76.0
+offset_top = -38.5
+offset_right = 76.0
+offset_bottom = 38.5
+grow_horizontal = 2
+grow_vertical = 2
+columns = 8
+
+[node name="FastInv" type="HBoxContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -68.665
+offset_right = 180.0
+offset_bottom = -4.66504
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 0
+theme_override_constants/separation = 16
+
+[node name="Hand" parent="FastInv" instance=ExtResource("2_c8jhu")]
+layout_mode = 2
+tooltip_text = "Right Hand"
+
+[node name="FastInv" type="HBoxContainer" parent="FastInv"]
+layout_mode = 2
+
+[node name="InventorySlot" parent="FastInv/FastInv" instance=ExtResource("2_c8jhu")]
+layout_mode = 2
+
+[node name="InventorySlot2" parent="FastInv/FastInv" instance=ExtResource("2_c8jhu")]
+layout_mode = 2
+
+[node name="InventorySlot3" parent="FastInv/FastInv" instance=ExtResource("2_c8jhu")]
+layout_mode = 2

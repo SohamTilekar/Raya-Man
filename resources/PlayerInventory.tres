@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="Inv" load_steps=6 format=3 uid="uid://svdk4buk17u"]
+
+[ext_resource type="Script" uid="uid://c0rgkphh2vhsc" path="res://scripts/Inventory&Weapon Sys/inventorySlot.gd" id="1_5xd7a"]
+[ext_resource type="Resource" uid="uid://ppl3gscwyww8" path="res://resources/Items/Weapons/Swords/IronSword.tres" id="2_t82vs"]
+[ext_resource type="Script" uid="uid://b4e8bes3akm43" path="res://scripts/Inventory&Weapon Sys/inventoryRes.gd" id="3_8g7gw"]
+
+[sub_resource type="Resource" id="Resource_ho34u"]
+script = ExtResource("1_5xd7a")
+quantity = 1
+item = ExtResource("2_t82vs")
+metadata/_custom_type_script = "uid://c0rgkphh2vhsc"
+
+[sub_resource type="Resource" id="Resource_bpwsh"]
+script = ExtResource("1_5xd7a")
+quantity = 1
+item = ExtResource("2_t82vs")
+metadata/_custom_type_script = "uid://c0rgkphh2vhsc"
+
+[resource]
+script = ExtResource("3_8g7gw")
+items = Array[ExtResource("1_5xd7a")]([null, null, null, null, null, null, null, SubResource("Resource_ho34u"), null, null, null, null, SubResource("Resource_bpwsh"), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null])
+special_items = Dictionary[String, ExtResource("1_5xd7a")]({
+"fast_inv:1": null,
+"fast_inv:2": null,
+"fast_inv:3": null,
+"fast_inv:4": null,
+"fast_inv:5": null,
+"fast_inv:6": null,
+"fast_inv:7": null,
+"fast_inv:8": null
+})
+special_data = {}
+metadata/_custom_type_script = "uid://b4e8bes3akm43"

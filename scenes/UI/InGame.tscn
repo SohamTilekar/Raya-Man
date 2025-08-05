@@ -1,0 +1,45 @@
+[gd_scene load_steps=2 format=3 uid="uid://bp66f1b4w8xo4"]
+
+[ext_resource type="Script" uid="uid://clhvpbek3msa3" path="res://scenes/UI/InGame.gd" id="1_v3yap"]
+
+[node name="IngameUI" type="CanvasLayer"]
+script = ExtResource("1_v3yap")
+
+[node name="Background Darkner" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -141.0
+offset_top = -89.5
+offset_right = 141.0
+offset_bottom = 89.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Exit World" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Exit World"
+
+[node name="Quit Game" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Quit Game"
+
+[node name="Return To Game" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Return To Game"
+
+[connection signal="pressed" from="VBoxContainer/Exit World" to="." method="_on_exit_world_pressed"]
+[connection signal="pressed" from="VBoxContainer/Quit Game" to="." method="_on_quit_game_pressed"]
+[connection signal="pressed" from="VBoxContainer/Return To Game" to="." method="_on_return_to_game_pressed"]

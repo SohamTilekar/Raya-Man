@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfngo1tt54ed2"]
+
+[ext_resource type="Script" uid="uid://d1vmo2a1o4lys" path="res://scenes/PlayerInventory/InventorySlot.gd" id="1_l3fr4"]
+[ext_resource type="Texture2D" uid="uid://cj5ojca4kyow4" path="res://asserts/Items/Weapons/Swords/Iicon_32_01.png" id="2_et8er"]
+
+[node name="InventorySlot" type="Panel"]
+custom_minimum_size = Vector2(64, 64)
+offset_right = 64.0
+offset_bottom = 64.0
+pivot_offset = Vector2(20, 20)
+script = ExtResource("1_l3fr4")
+
+[node name="Item" type="Sprite2D" parent="."]
+position = Vector2(233, 112)
+scale = Vector2(3.5, 3.5)
+texture = ExtResource("2_et8er")
+offset = Vector2(-57.5, -23)

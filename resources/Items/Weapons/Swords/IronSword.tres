@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="Weapon" load_steps=9 format=3 uid="uid://ppl3gscwyww8"]
+
+[ext_resource type="Script" uid="uid://bqkhguyw6ngwh" path="res://scripts/Inventory&Weapon Sys/attack/attackCondition.gd" id="1_2m73p"]
+[ext_resource type="Script" uid="uid://dym4c1ohs683h" path="res://scripts/Inventory&Weapon Sys/attack/weaponAttackEffect.gd" id="2_wd0fu"]
+[ext_resource type="Texture2D" uid="uid://cen6m5pducvue" path="res://asserts/Effects/attacks/swipe00.png" id="3_fsknb"]
+[ext_resource type="Script" uid="uid://b6rnavmipx3n" path="res://scripts/Inventory&Weapon Sys/weaponRes.gd" id="4_y282b"]
+[ext_resource type="Texture2D" uid="uid://cidnwdapshjip" path="res://asserts/Items/Weapons/Swords/sword_iron.png" id="5_lb0d3"]
+
+[sub_resource type="Resource" id="Resource_r1q0c"]
+script = ExtResource("1_2m73p")
+input_action = "Click"
+precidence = 1024
+metadata/_custom_type_script = "uid://bqkhguyw6ngwh"
+
+[sub_resource type="Resource" id="Resource_yumls"]
+script = ExtResource("2_wd0fu")
+region = Rect2(0, 0, 56, 56)
+offset = Vector2(0, 0)
+start_at = 0.0
+metadata/_custom_type_script = "uid://dym4c1ohs683h"
+
+[sub_resource type="Resource" id="Resource_rjn45"]
+script = ExtResource("2_wd0fu")
+region = Rect2(56, 0, 56, 56)
+offset = Vector2(0, 0)
+start_at = 0.6
+metadata/_custom_type_script = "uid://dym4c1ohs683h"
+
+[resource]
+script = ExtResource("4_y282b")
+attack_condition = SubResource("Resource_r1q0c")
+attack_types = Array[int]([0])
+attack_effect_texture = ExtResource("3_fsknb")
+attack_effect_atlass = Array[ExtResource("2_wd0fu")]([SubResource("Resource_yumls"), SubResource("Resource_rjn45")])
+attack_distance = 25.0
+attack_radius = 8.0
+attack_duration = 0.1
+combo_lifespan = 1.2
+return_duration = 0.2
+name = "IronSword"
+texture = ExtResource("5_lb0d3")
+stack_size = 1
+can_hold_in_hand = true
+hand_hold_offset = Vector2(0, -8)
+metadata/_custom_type_script = "uid://b6rnavmipx3n"

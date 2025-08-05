@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://ltayyisxfyu3"]
+
+[ext_resource type="Script" uid="uid://bt1sshim4g7ac" path="res://scenes/UI/Main.gd" id="1_fnul3"]
+
+[node name="Main UI" type="CanvasLayer"]
+script = ExtResource("1_fnul3")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 648.0
+offset_top = 312.0
+offset_right = 861.0
+offset_bottom = 375.0
+scale = Vector2(3.32, 1.44)
+theme_override_font_sizes/font_size = 45
+text = "Raya Man"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Start Game" type="Button" parent="."]
+offset_left = 824.0
+offset_top = 448.0
+offset_right = 1159.0
+offset_bottom = 512.0
+theme_override_font_sizes/font_size = 35
+text = "Start Game"
+
+[node name="Quit Game" type="Button" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = 29.5
+offset_right = 205.0
+offset_bottom = 93.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 35
+text = "Quit Game"
+
+[connection signal="pressed" from="Start Game" to="." method="_on_start_game_pressed"]
+[connection signal="pressed" from="Quit Game" to="." method="_on_quit_game_pressed"]
