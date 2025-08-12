@@ -6,7 +6,7 @@ var attacks: Dictionary[String, Attack] = {}
 #region Weapon
 var weapon: Weapon = null
 
-func set_weapon(new_weapon: Weapon):
+func set_weapon(new_weapon: Weapon, target: Vector2):
 	if weapon:
 		for type in weapon.attack_types:
 			match type:
@@ -26,7 +26,7 @@ func set_weapon(new_weapon: Weapon):
 		if weapon.attack_effect_texture:
 			effect_sprite.texture = AtlasTexture.new()
 			effect_sprite.texture.atlas = weapon.attack_effect_texture
-	update_weapon_pos()
+	update_weapon_pos(target)
 
 func get_weapon() -> Weapon:
 	return weapon
@@ -64,10 +64,10 @@ func get_weapon_sprite() -> Node2D:
 #region Effect
 var effect_sprite: Sprite2D = null
 
-func set_effect_sprite(effect_sprite: Sprite2D):
-	self.effect_sprite = effect_sprite
+func set_effect_sprite(new_effect_sprite: Sprite2D):
+	self.effect_sprite = new_effect_sprite
 	for attack in attacks.values():
-		attack.set_effect_sprite(effect_sprite)
+		attack.set_effect_sprite(new_effect_sprite)
 
 func get_effect_sprite() -> Node2D:
 	return effect_sprite
@@ -98,23 +98,23 @@ func get_available_attacks() -> Dictionary[String, AttackCondition]:
 	return available
 
 # Trigger a specific attack if possible
-func trigger_attack(name: String, dir: Vector2 = Vector2.ZERO) -> void:
+func trigger_attack(name: String, target: Vector2) -> void:
 	if not attacks.has(name):
 		push_warning("Attack '%s' not registered." % name)
 		return
 
 	var attack: Attack = attacks[name]
 	if attack.can_attack():
-		attack.attack(dir)
+		attack.attack(target)
 
 # Update weapon position for specific attack types
-func update_weapon_pos() -> void:
+func update_weapon_pos(target: Vector2) -> void:
 	for attack in attacks.values():
 		if attack.has_method("update_weapon_pos"):
-			attack.update_weapon_pos()
+			attack.update_weapon_pos(target)
 
 # Handle animations only for those attacks that require it
-func handle_attack_animation(delta: float) -> void:
+func handle_attack_animation(delta: float, target: Vector2) -> void:
 	for attack in attacks.values():
 		if attack.should_animate():
-			attack.handle_attack_animation(delta)
+			attack.handle_attack_animation(delta, target)

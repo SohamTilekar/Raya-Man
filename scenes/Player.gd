@@ -36,12 +36,12 @@ func _ready() -> void:
 
 func _on_player_inventory_hand_node_update(item: Item):
 	in_hand_item = item
-	if item != null and item.can_hold_in_hand:
+	if item and item.can_hold_in_hand:
 			item_sprite.texture = item.inhand_texture if item.inhand_texture else item.texture
 			item_sprite.offset = item.hand_hold_offset
 			item_sprite.show()
 			if item is Weapon:
-				attack_sys.set_weapon(item)
+				attack_sys.set_weapon(item, get_global_mouse_position())
 	else:
 		item_sprite.texture = null
 		item_sprite.offset = Vector2.ZERO
@@ -51,7 +51,7 @@ func _on_player_inventory_hand_node_update(item: Item):
 
 func _physics_process(delta: float) -> void:
 	handle_movement(delta)
-	attack_sys.handle_attack_animation(delta)
+	attack_sys.handle_attack_animation(delta, get_global_mouse_position())
 
 func _process(_delta: float) -> void:
 	queue_redraw()
@@ -91,14 +91,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	turn_character(get_global_mouse_position().x < $Character.global_position.x)
 	var attacks := attack_sys.get_available_attacks()
 	var selected_attack: String = ""
-	var precidence: int = -INF
+	var precidence: float = -INF
 	for attack in attacks:
 		if attacks[attack].condition_matches(event):
 			if precidence < attacks[attack].precidence:
 				selected_attack = attack
 	if selected_attack != "":
-		attack_sys.trigger_attack(selected_attack, get_global_mouse_position() - $Character.global_position)
-	attack_sys.update_weapon_pos()
+		print(get_global_mouse_position(), $Character.global_position)
+		attack_sys.trigger_attack(selected_attack, get_global_mouse_position())
+	attack_sys.update_weapon_pos(get_global_mouse_position())
 
 # Flips character and dust sprite
 func turn_character(to_west: bool):

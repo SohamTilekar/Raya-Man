@@ -1,0 +1,1 @@
+class_name BaseEntity extends CharacterBody2D

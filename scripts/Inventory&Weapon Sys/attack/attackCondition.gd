@@ -1,7 +1,7 @@
 class_name AttackCondition extends Resource
 
 @export var input_action: String = ""
-@export var precidence: int = 0
+@export var precidence: float = 0.
 
 func condition_matches(event: InputEvent) -> bool:
 	if input_action != "":

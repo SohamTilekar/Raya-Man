@@ -390,19 +390,19 @@ shader_parameter/color_tolerance = 0.01
 [sub_resource type="GDScript" id="GDScript_hhf5b"]
 script/source = "extends AnimatedSprite2D
 
-@onready var char: AnimatedSprite2D = $\"../Character\"
+@onready var character_sprite: AnimatedSprite2D = $\"../Character\"
 
-func _process(delta: float) -> void:
-	self.flip_h = char.flip_h
+func _process(_delta: float) -> void:
+	self.flip_h = character_sprite.flip_h
 
 func _on_character_animation_changed() -> void:
-	self.animation = char.animation
+	self.animation = character_sprite.animation
 
 func _on_character_frame_changed() -> void:
-	self.frame = char.frame
+	self.frame = character_sprite.frame
 
 func _on_character_sprite_frames_changed() -> void:
-	self.sprite_frames = char.sprite_frames
+	self.sprite_frames = character_sprite.sprite_frames
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pxiyk"]
@@ -1055,6 +1055,9 @@ _data = {
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
 y_sort_enabled = true
+collision_mask = 0
+motion_mode = 1
+wall_min_slide_angle = 0.0
 script = ExtResource("1_cke1c")
 
 [node name="Character" type="AnimatedSprite2D" parent="."]

@@ -23,18 +23,18 @@ func can_attack_after() -> float:
 	else:
 		return max(0.0, weapon.return_duration - return_timer)
 
-func update_weapon_pos() -> void:
+func update_weapon_pos(target: Vector2) -> void:
 	if !should_animate():
-		_set_weapon_sprite_pos()
+		_set_weapon_sprite_pos(target)
 
-func attack(_dir: Vector2 = Vector2.ZERO) -> void:
+func attack(target: Vector2) -> void:
 	if wating_for_combo:
 		_start_attack_reverse()
 	if not is_attacking:
-		_set_weapon_sprite_pos()
-		_start_attack()
+		_set_weapon_sprite_pos(target)
+		_start_attack(target)
 
-func handle_attack_animation(delta: float) -> void:
+func handle_attack_animation(delta: float, target: Vector2) -> void:
 	if weapon is Weapon and weapon.attack_types.has(Weapon.AttackType.Sword):
 		if wating_for_combo:
 			combo_timer += delta
@@ -46,9 +46,9 @@ func handle_attack_animation(delta: float) -> void:
 					return_timer = 0.0
 					combo_timer = 0.0
 					wating_for_combo = false
-					_set_weapon_sprite_pos()
+					_set_weapon_sprite_pos(target)
 				else:
-					var dir = (usr_sprite.get_global_mouse_position() - usr_sprite.global_position).normalized()
+					var dir = (target - usr_sprite.global_position).normalized()
 					weapon_sprite.rotation = Utils.lerp_angle_longest(attack_rotation_end + PI/6 if usr_sprite.flip_h else attack_rotation_end - PI/6, _get_weapon_rot(dir), rt)
 					weapon_sprite.global_position = usr_sprite.global_position + \
 						Vector2.from_angle(Utils.lerp_angle_longest(attack_angle_end + PI/6 if usr_sprite.flip_h else attack_angle_end - PI/6, _get_weapon_pos_dir(dir).angle(), rt)) * weapon.attack_radius
@@ -85,8 +85,8 @@ func handle_attack_animation(delta: float) -> void:
 			effect_sprite.texture.region = Rect2(-1, -1, 1, 1)
 			effect_sprite.hide()
 
-func _start_attack():
-	var dir = (usr_sprite.get_global_mouse_position() - usr_sprite.global_position).angle()
+func _start_attack(target: Vector2):
+	var dir = (target - usr_sprite.global_position).angle()
 	attack_rotation_start = weapon_sprite.rotation
 	attack_rotation_end = attack_rotation_start + PI / 2 if usr_sprite.flip_h else attack_rotation_start - PI / 2
 	attack_angle_end = attack_angle_start + PI / 2 if usr_sprite.flip_h else attack_angle_start - PI / 2
@@ -114,8 +114,8 @@ func _get_weapon_rot(dir: Vector2) -> float:
 func _get_weapon_pos_dir(dir: Vector2) -> Vector2:
 	return dir.rotated(3 * PI / 4 if usr_sprite.flip_h else -3 * PI / 4).normalized()
 
-func _set_weapon_sprite_pos():
-	var dir = (usr_sprite.get_global_mouse_position() - usr_sprite.global_position).normalized()
+func _set_weapon_sprite_pos(target: Vector2):
+	var dir = (target - usr_sprite.global_position).normalized()
 	var offset_dir = _get_weapon_pos_dir(dir)
 
 	attack_angle_start = offset_dir.angle()

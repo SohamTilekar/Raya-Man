@@ -9,12 +9,15 @@ func _ready() -> void:
 	if not GameNode:
 		printerr("GameNode Export var not set")
 
+func _get_configuration_warnings() -> PackedStringArray:
+	return [] if GameNode else ["GameNode Not Set"]
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		_on_return_to_game_pressed()
 
 func _on_exit_world_pressed() -> void:
-	get_tree().root.add_child.call_deferred(load("res://scenes/UI/main_ui.tscn").instantiate())
+	get_tree().root.add_child.call_deferred(load("res://scenes/UI/Main.tscn").instantiate())
 	get_tree().root.remove_child(GameNode)
 
 func _on_quit_game_pressed() -> void:

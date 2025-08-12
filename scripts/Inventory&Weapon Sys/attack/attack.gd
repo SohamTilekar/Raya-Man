@@ -17,9 +17,9 @@ func can_attack_after() -> float:
 #region Weapon
 var weapon: Weapon = null
 
-func set_weapon(weapon: Weapon):
-	self.weapon = weapon
-	attack_condition = weapon.attack_condition
+func set_weapon(new_weapon: Weapon):
+	self.weapon = new_weapon
+	attack_condition = new_weapon.attack_condition
 
 func get_weapon() -> Weapon:
 	return weapon
@@ -38,11 +38,11 @@ func get_user_sprite() -> Node2D:
 #region WeaponSprite
 var weapon_sprite: Node2D = null
 
-func set_weapon_asprite(weapon_sprite: AnimatedSprite2D):
-	self.weapon_sprite = weapon_sprite
+func set_weapon_asprite(new_weapon_sprite: AnimatedSprite2D):
+	self.weapon_sprite = new_weapon_sprite
 
-func set_weapon_sprite(weapon_sprite: Sprite2D):
-	self.weapon_sprite = weapon_sprite
+func set_weapon_sprite(new_weapon_sprite: Sprite2D):
+	self.weapon_sprite = new_weapon_sprite
 
 func get_weapon_sprite() -> Node2D:
 	return weapon_sprite
@@ -51,8 +51,8 @@ func get_weapon_sprite() -> Node2D:
 #region Effect
 var effect_sprite: Sprite2D = null
 
-func set_effect_sprite(effect_sprite: Sprite2D):
-	self.effect_sprite = effect_sprite
+func set_effect_sprite(new_effect_sprite: Sprite2D):
+	self.effect_sprite = new_effect_sprite
 
 func get_effect_sprite() -> Node2D:
 	return effect_sprite
@@ -61,11 +61,11 @@ func get_effect_sprite() -> Node2D:
 func should_animate() -> bool:
 	return true
 
-#func update_weapon_pos() -> void:
-	#pass
-
-func attack(dir: Vector2 = Vector2.ZERO) -> void:
+func update_weapon_pos(_target: Vector2) -> void:
 	pass
 
-func handle_attack_animation(delta: float) -> void:
+func attack(_target: Vector2) -> void:
+	pass
+
+func handle_attack_animation(_delta: float, _target: Vector2) -> void:
 	pass

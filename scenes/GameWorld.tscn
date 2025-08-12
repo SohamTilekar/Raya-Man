@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://drbemkpep3vox"]
+[gd_scene load_steps=35 format=3 uid="uid://drbemkpep3vox"]
 
 [ext_resource type="Script" uid="uid://cqso86qbhg5e0" path="res://scenes/GameWorld.cs" id="1_0vfqx"]
 [ext_resource type="PackedScene" uid="uid://bp66f1b4w8xo4" path="res://scenes/UI/InGame.tscn" id="2_47u71"]
@@ -14,6 +14,8 @@
 [ext_resource type="Texture2D" uid="uid://d1olev72ajtnu" path="res://asserts/Natural/Plant&Saplings/Plants/FantacyForest.png" id="9_ph1f2"]
 [ext_resource type="Texture2D" uid="uid://1nck2qdmbkw" path="res://asserts/Natural/Plant&Saplings/Plants/FantacyForestWater.png" id="11_6ll7h"]
 [ext_resource type="Script" uid="uid://bjn84jon5lool" path="res://scripts/InGameConsole.gd" id="14_dlaip"]
+[ext_resource type="PackedScene" uid="uid://cdcb2vrai08gv" path="res://scenes/Entitys/Skelly.tscn" id="15_o4unr"]
+[ext_resource type="Texture2D" uid="uid://ddnc2ayqm0gk3" path="res://icon.svg" id="16_o4unr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bhwwd"]
 texture = ExtResource("2_wbbl4")
@@ -5126,6 +5128,7 @@ terrain_set_1/terrain_2/name = "Water"
 terrain_set_1/terrain_2/color = Color(0.172294, 0.535744, 0.542763, 1)
 terrain_set_1/terrain_3/name = "Dark Grass"
 terrain_set_1/terrain_3/color = Color(0.183499, 0.304812, 0.122041, 1)
+navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_bhwwd")
 sources/1 = SubResource("TileSetAtlasSource_pdbwf")
 metadata/_better_terrain = {
@@ -5598,7 +5601,7 @@ texture = ExtResource("11_6ll7h")
 1:0/1 = 1
 
 [sub_resource type="TileSet" id="TileSet_bhwwd"]
-physics_layer_0/collision_layer = 1
+physics_layer_0/collision_layer = 4
 physics_layer_0/collision_mask = 0
 sources/1 = SubResource("TileSetAtlasSource_u1jpj")
 sources/0 = SubResource("TileSetAtlasSource_6c6v5")
@@ -5636,6 +5639,15 @@ func _process(_delta: float) -> void:
 	self.text = str(Vector2i($\"../../../../YSorting/Player\".global_position / tile_size))
 "
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_omux8"]
+size = Vector2(114, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8teas"]
+size = Vector2(112, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o4unr"]
+size = Vector2(24, 24)
+
 [node name="GameWorld" type="Node2D"]
 script = ExtResource("1_0vfqx")
 ChunksDistanceRadius = 2
@@ -5652,6 +5664,13 @@ tile_set = SubResource("TileSet_bhwwd")
 
 [node name="Player" parent="YSorting" instance=ExtResource("2_ywgp6")]
 unique_name_in_owner = true
+
+[node name="Humanoid" parent="YSorting" instance=ExtResource("15_o4unr")]
+collision_layer = 1
+collision_mask = 1
+motion_mode = 0
+wall_min_slide_angle = 0.261799
+in_hand_item = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
 unique_name_in_owner = true
@@ -5697,5 +5716,65 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("14_dlaip")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(57, -74)
+collision_layer = 7
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_omux8")
+
+[node name="Icon" type="Sprite2D" parent="StaticBody2D"]
+position = Vector2(0, 1.90735e-06)
+scale = Vector2(0.890625, 0.15625)
+texture = ExtResource("16_o4unr")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="."]
+position = Vector2(57, -74)
+collision_layer = 7
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2"]
+position = Vector2(45, 50)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_8teas")
+
+[node name="Icon" type="Sprite2D" parent="StaticBody2D2"]
+position = Vector2(45, 47)
+rotation = -1.5708
+scale = Vector2(0.890625, 0.15625)
+texture = ExtResource("16_o4unr")
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="."]
+position = Vector2(111, -74)
+collision_layer = 7
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4"]
+position = Vector2(45, 50)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_8teas")
+
+[node name="Icon" type="Sprite2D" parent="StaticBody2D4"]
+position = Vector2(45, 47)
+rotation = -1.5708
+scale = Vector2(0.890625, 0.15625)
+texture = ExtResource("16_o4unr")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="."]
+position = Vector2(-96, -84)
+collision_layer = 7
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D3"]
+position = Vector2(44, 8)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_o4unr")
+
+[node name="Icon" type="Sprite2D" parent="StaticBody2D3"]
+position = Vector2(43.9997, 8.00308)
+scale = Vector2(0.187516, 0.187504)
+texture = ExtResource("16_o4unr")
 
 [connection signal="player_moved_pos" from="YSorting/Player" to="Camera2D" method="_on_main_character_player_moved_pos" flags=3]
