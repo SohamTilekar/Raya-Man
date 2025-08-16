@@ -5668,9 +5668,6 @@ unique_name_in_owner = true
 [node name="Humanoid" parent="YSorting" instance=ExtResource("15_o4unr")]
 collision_layer = 1
 collision_mask = 1
-motion_mode = 0
-wall_min_slide_angle = 0.261799
-in_hand_item = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
 unique_name_in_owner = true

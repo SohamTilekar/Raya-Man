@@ -55,16 +55,13 @@ signal target_lost()
 @export_category("Avoidance Tuning")
 
 ## Exponent applied to openness for avoidance calculation
-@export_exp_easing var avoidance_exp_pow := 1.2
+@export_exp_easing var avoidance_exp_pow := 2
 
 ## Strength multiplier for avoidance force
-@export_range(0.0, 10.0, 0.01, "or_greater") var avoidance_exp_strength := 4
-
-## Weight for alignment in avoidance
-@export_range(0.0, 1.0, 0.01) var avoidance_align_weight := 0.8
+@export_range(0.0, 10.0, 0.01, "or_greater") var avoidance_exp_strength := 0.8
 
 ## Smoothing factor for avoidance steering
-@export_range(0.0, 5.0, 0.01) var avoidance_smoothing_speed: float = 0.8
+@export var avoidance_smoothing_speed: float = 8
 
 
 
@@ -218,8 +215,8 @@ var spawn_point: Vector2 = Vector2.ZERO
 ## Called when the node is ready
 func _ready() -> void:
 	nav_agent.target_desired_distance = area_reach_threshold
-	_init_visuals()
 	_init_attack_sys()
+	_init_visuals()
 	_init_noise()
 	spawn_point = global_position
 	speed_current = walk_speed
@@ -272,8 +269,8 @@ func _physics_process(delta: float) -> void:
 
 ## Apply movement to the entity
 func _move_and_apply_velocity(_delta: float) -> void:
-	turn_entity(move_direction.normalized().x)
 	move_and_slide()
+	turn_entity(move_direction.normalized().x)
 #endregion
 
 
@@ -284,56 +281,135 @@ func _behave_wander(delta: float) -> void:
 	var wander_dir = _noise_dir(_cord)
 	var to_home = (spawn_point - global_position)
 	var dist = to_home.length()
-	var home_weight = pow(clamp(dist / max_wander_distance, 0.0, 1.0), 2)
-	var wander_weight = 1.0 - home_weight
+	var home_weight = pow(dist / max_wander_distance, 2)
 
-	move_direction = (wander_dir * wander_weight + to_home.normalized() * home_weight).normalized()
-	move_direction = _get_avoidance_vector()
+	move_direction = calculate_avoidance_vector_from_inputs(
+			[
+				DirectionWeight.new(wander_dir, 1.),
+				DirectionWeight.new(to_home, home_weight),
+			],
+			delta
+		)
 	velocity = move_direction * walk_speed
-	attack_sys.handle_attack_animation(delta, global_position + velocity * delta)
-	attack_sys.update_weapon_pos(global_position + velocity * delta)
+
+enum CombatMode {
+	HUNT,
+	OFFENSE
+}
+var combat_mode: CombatMode = CombatMode.HUNT
+enum ChaseMode {
+	DEFENSE,
+	STRIKE
+}
+var chase_mode: ChaseMode = ChaseMode.DEFENSE
+
+var defense_timer := 0.0
+var strike_cooldown := 0.0
+var selected_attack_condition: AttackCondition = null
+var selected_attack_name: String = ""
 
 func _behave_chase(delta: float) -> void:
 	_cord += delta
-	var target_vec = Vector2.ZERO
+	strike_cooldown = max(0.0, strike_cooldown - delta)
 
 	if chase_target and is_instance_valid(chase_target):
-		target_vec = (chase_target.global_position - global_position).normalized()
-		last_known_position = chase_target.global_position
+		var target_pos = chase_target.global_position
+		attack_sys.handle_attack_animation(delta, target_pos)
+		var to_target = target_pos - global_position
+		var distance = to_target.length()
+		last_known_position = target_pos
+
+		# Select best ranged Sword_Sorrund_target attack
+		var available_attacks = attack_sys.get_available_attacks()
+		var max_range := -1.0
+
+		for name in available_attacks:
+			var cond: AttackCondition = available_attacks[name]
+			if cond.movement == AttackCondition.MovementType.Sword_Sorrund_target:
+				if cond.max_dist_frm_target > max_range:
+					max_range = cond.max_dist_frm_target
+					selected_attack_name = name
+					selected_attack_condition = cond
+		
+		# Decide on COMBAT MODE based on distance
+		if selected_attack_condition:
+			if distance > 1.3 * selected_attack_condition.max_dist_frm_target:
+				combat_mode = CombatMode.HUNT
+			else:
+				combat_mode = CombatMode.OFFENSE
+
+		if combat_mode == CombatMode.HUNT:
+			_handle_hunt(delta, to_target)
+		elif combat_mode == CombatMode.OFFENSE:
+			_handle_offense(delta, to_target, distance, target_pos)
 	else:
+		# LOST TARGET
 		lost_sight_timer += delta
 		var to_last = last_known_position - global_position
-		if to_last.length() < delta * velocity.length():
+		if to_last.length() < (delta * velocity.length() * 2 if _min_openness == 1.0 else sense_distance):
 			travel_time_to_last_known = max(lost_sight_timer * 2.0, min_search_time)
 			search_timer = 0.0
 			search_sector_index = 0
 			_set_state(State.SEARCH)
 			return
-		target_vec = to_last.normalized()
+		move_direction = calculate_avoidance_vector_from_inputs([DirectionWeight.new(to_last.normalized(), 1.0)], delta)
 
-	var obstacles_nearby := false
-	for info in _sample_info:
-		if info.hit_pos:
-			obstacles_nearby = true
-
-	var noise_weight = 0.0
-	var target_weight = 1.0
-	if not obstacles_nearby:
-		var dist_factor = clamp(global_position.distance_to(last_known_position) / vision_distance, 0.0, 1.0)
-		noise_weight = lerp(0.0, 0.4, dist_factor)
-		target_weight = 1.0 - noise_weight * (1.0 if chase_target and is_instance_valid(chase_target) else 0.0)
-		var noise_dir = _noise_dir(_cord)
-		move_direction = (target_vec * target_weight + noise_dir * noise_weight).normalized()
-	else:
-		move_direction = target_vec
-	move_direction = _get_avoidance_vector()
-
-	var desired_speed = chase_speed
-	if burst_timer > 0.0:
-		desired_speed = burst_speed
-		burst_timer = max(0.0, burst_timer - delta)
-	speed_current = lerp(speed_current, desired_speed, 5.0 * delta)
+	# Final velocity update
 	velocity = move_direction * speed_current
+
+
+func _handle_hunt(delta: float, to_target: Vector2) -> void:
+	var dist_factor = clamp(global_position.distance_to(last_known_position) / vision_distance * 1.5, 0.0, 1.0)
+	var noise_weight = lerp(0.0, 0.4, dist_factor)
+	move_direction = calculate_avoidance_vector_from_inputs([
+		DirectionWeight.new(to_target.normalized(), 1.0),
+		DirectionWeight.new(_noise_dir(_cord), noise_weight)
+	], delta)
+
+	# faster hunt
+	speed_current = chase_speed
+
+func _handle_offense(delta: float, to_target: Vector2, distance: float, target_pos: Vector2) -> void:
+	strike_cooldown = max(0.0, strike_cooldown - delta)
+
+	match chase_mode:
+		ChaseMode.DEFENSE:
+			defense_timer += delta
+			speed_current = walk_speed
+			if distance < selected_attack_condition.max_dist_frm_target:
+				# Too close, back off slightly
+				move_direction = calculate_avoidance_vector_from_inputs([
+					DirectionWeight.new(-to_target.normalized(), 1.0),
+					DirectionWeight.new(_noise_dir(_cord / 10), defense_timer / 4)
+				], delta)
+			else:
+				move_direction = calculate_avoidance_vector_from_inputs([
+					DirectionWeight.new(to_target.normalized(), 1.0, 1.0),
+					DirectionWeight.new(_noise_dir(_cord / 10), defense_timer / 4)
+				], delta)
+
+			if defense_timer >= 4.0:
+				chase_mode = ChaseMode.STRIKE
+				defense_timer = 0.0
+
+		ChaseMode.STRIKE:
+			move_direction = calculate_avoidance_vector_from_inputs([
+				DirectionWeight.new(to_target.normalized(), 1.0)
+			], delta)
+
+			speed_current = chase_speed * 1.5
+
+			var mid_range = (selected_attack_condition.min_dist_frm_target + selected_attack_condition.max_dist_frm_target) / 2.0
+			var tolerance = 0.2 * (selected_attack_condition.max_dist_frm_target - selected_attack_condition.min_dist_frm_target)
+			var strike_band_min = mid_range - tolerance
+			var strike_band_max = mid_range + tolerance
+
+			if distance >= strike_band_min and distance <= strike_band_max:
+				print("Attacked")
+				attack_sys.trigger_attack(selected_attack_name, target_pos)
+				strike_cooldown = 2.0
+				chase_mode = ChaseMode.DEFENSE
+				defense_timer = 0.0
 
 func _behave_search(delta: float) -> void:
 	search_timer += delta
@@ -372,8 +448,8 @@ func _behave_search(delta: float) -> void:
 
 	# steer toward the search target dir and apply avoidance
 	move_direction = move_direction.slerp(_search_target_dir, 5.0 * delta)
-	move_direction = _get_avoidance_vector()
-	speed_current = lerp(speed_current, search_speed, 4.0 * delta)
+	move_direction = calculate_avoidance_vector_from_inputs([DirectionWeight.new(move_direction, 1)], delta)
+	speed_current = search_speed
 	velocity = move_direction * speed_current
 
 	# exit search after we've spent the allotted travel time
@@ -383,18 +459,22 @@ func _behave_search(delta: float) -> void:
 
 
 #region VISION_AND_SENSING
-func update_vision(_delta: float) -> void:
+var _ray_rotation_offset := 0.0 # store rotation between frames
+
+func update_vision(delta: float) -> void:
 	# scan cone + rear to find valid targets
 	var eye_pos = global_position
 	var found_target: Node2D = null
 	var facing_angle = move_direction.angle()
 	_sample_info.clear()
 	_min_openness = 1.0
+	_ray_rotation_offset += (TAU / sense_ray_count) * delta # reduces distance between 2 consicative rays perfectly
+	_ray_rotation_offset = wrapf(_ray_rotation_offset, 0.0, TAU)
 
 	# gather samples around the agent
 	# rear / peripheral sense (shorter)
 	for i in range(sense_ray_count):
-		var angle = TAU * i / sense_ray_count
+		var angle = TAU * i / sense_ray_count + _ray_rotation_offset
 		var dir: Vector2 = Vector2.from_angle(angle)
 		var hit: Dictionary = _raycast(eye_pos, eye_pos + dir * sense_distance)
 		var openness := 1.0
@@ -464,44 +544,40 @@ func _is_direction_blocked(dir: Vector2, length: float) -> bool:
 
 
 #region AVOIDANCE_AND_STUCK
-func _get_avoidance_vector() -> Vector2:
-	var desired_dir := move_direction.normalized() if !move_direction.is_zero_approx() else Vector2.RIGHT
-	var global_proximity := 1.0 - _min_openness
 
-	var sum_dir := Vector2.ZERO
-	var sum_score := 0.0
+class DirectionWeight extends RefCounted:
+	var direction: Vector2
+	var weight: float
+	var blend_mode: float  # 0 (dot) to 1 (cross)
+
+	func _init(dir: Vector2, w: float, blend: float = 0.0):
+		direction = dir.normalized()
+		weight = w
+		blend_mode = clamp(blend, 0.0, 1.0)
+
+func calculate_avoidance_vector_from_inputs(inputs: Array[DirectionWeight], delta: float) -> Vector2:
+	var avoidance_vec := Vector2.ZERO
 
 	for info in _sample_info:
 		if not info.hit_pos.is_zero_approx():
-			continue
-		var dir := info.dir
-		var openness := info.openness
+			var hit_dir := (info.hit_pos - global_position).normalized()
+			avoidance_vec += hit_dir / pow(info.openness, avoidance_exp_pow) * -avoidance_exp_strength
+		else:
+			for input in inputs:
+				if input is DirectionWeight:
+					var align := input.direction.dot(info.dir)
+					var revolve := input.direction.cross(info.dir)
+					var influence := lerpf(align, revolve, input.blend_mode)
+					avoidance_vec += info.dir * influence * input.weight
 
-		var alignment := (dir.dot(desired_dir) + 1.0) / 2
-		var base_score := alignment * avoidance_align_weight + openness * (1.0 - avoidance_align_weight)
-		var exp_boost := 1.0 + pow(global_proximity, avoidance_exp_pow) * avoidance_exp_strength
-		var score: float = max(base_score * exp_boost, 0.0)
-
-		sum_dir += dir * score
-		sum_score += score
-
-	var new_avoidance_vector := desired_dir if sum_score <= 0.0 else (sum_dir / sum_score).normalized()
-	var angle_diff: float = abs(_avoidance_vector_smoothed.angle_to(new_avoidance_vector))
-	if angle_diff > deg_to_rad(90) or _min_openness < 0.3:
-		# snap instantly if big turn or very close to an obstacle
-		_avoidance_vector_smoothed = new_avoidance_vector
-	else:
-		# smooth normally
-		_avoidance_vector_smoothed = _avoidance_vector_smoothed.slerp(
-			new_avoidance_vector,
-			clamp(avoidance_smoothing_speed * get_process_delta_time(), 0.0, 1.0)
-		)
-	#_avoidance_vector_smoothed = new_avoidance_vector
+	# Add historical smoothing
+	avoidance_vec += _avoidance_vector_smoothed * (avoidance_smoothing_speed * delta * 1000)
+	_avoidance_vector_smoothed = avoidance_vec.normalized()
 
 	return _avoidance_vector_smoothed
 
 func _check_stuck(delta: float) -> void:
-	# --- Position stuck check ---
+	# --- Position stuck check
 	if global_position.distance_to(_last_pos) <= position_stuck_distance:
 		_position_stuck_timer += delta
 	else:
@@ -549,7 +625,7 @@ func _check_stuck(delta: float) -> void:
 			break
 
 	# Increment timer only if we’re moving toward target AND there’s an obstacle
-	if doing_area_check and moving_toward_target and obstacle_detected:
+	if doing_area_check and not moving_toward_target and obstacle_detected:
 		if global_position.distance_to(target_pos) > area_reach_threshold:
 			_area_stuck_timer += delta
 		else:
@@ -587,7 +663,6 @@ func _try_pathfinding_to(target_pos: Vector2) -> void:
 		move_direction = (next_path_point - global_position).normalized()
 		print("📍 Pathfinding to target:", target_pos)
 
-# --- _get_avoidance_vector, _check_stuck, _handle_stuck, _try_pathfinding_to ---
 #endregion
 
 
@@ -606,14 +681,17 @@ func _set_state(new_state: State) -> void:
 	state = new_state
 	match state:
 		State.WANDER:
+			print("WANDER")
 			# reset some tracking values
 			chase_target = null
 			last_known_position = Vector2.ZERO
 			last_known_velocity = Vector2.ZERO
 		State.CHASE:
+			print("CHASE")
 			# start chase ramp
-			speed_current = max(speed_current, chase_speed / 2)
+			speed_current = chase_speed
 		State.SEARCH:
+			print("SEARCH")
 			search_timer = 0.0
 			_search_hold_timer = 0.0
 
@@ -629,6 +707,7 @@ func _is_valid_target(body: Node) -> bool:
 
 
 func _draw() -> void:
+	#return
 	if not debug_draw_vision:
 		return
 
@@ -660,6 +739,7 @@ func _draw() -> void:
 		draw_circle(point - global_position, area_reach_threshold, Color.MAGENTA)
 
 	draw_circle(self.spawn_point - global_position, 3, Color.BLACK)
+	draw_circle(self.spawn_point - global_position, max_wander_distance, Color.GOLD, false, 3, true)
 
 	# avoidance vector
 	if not _avoidance_vector_smoothed.is_zero_approx():
@@ -668,6 +748,10 @@ func _draw() -> void:
 	# basic direction
 	if not move_direction.is_zero_approx():
 		draw_line(Vector2.ZERO, move_direction.normalized() * 20.0, Color(0, 1, 1), 2.0)
+
+	if chase_target and selected_attack_condition:
+		draw_circle(chase_target.global_position - global_position, selected_attack_condition.min_dist_frm_target, Color.RED, false, 3, true)
+		draw_circle(chase_target.global_position - global_position, selected_attack_condition.max_dist_frm_target, Color.BLUE, false, 3, true)
 
 	draw_circle(last_known_position - global_position, 3, Color.YELLOW)
 
@@ -712,10 +796,18 @@ func _get_configuration_warnings() -> PackedStringArray:
 #region FLIP
 ## Flip sprite horizontally based on direction
 func turn_entity(dir: float) -> void:
-	if dir < 0.49:
-		sprite_node.flip_h = true
-		effect_node.flip_h = true
-	elif dir > 0.51:
-		sprite_node.flip_h = false
-		effect_node.flip_h = false
+	if last_known_position and state == State.CHASE:
+		if last_known_position.x < (self.global_position.x - 10):
+			sprite_node.flip_h = true
+			attack_sys.update_weapon_pos(last_known_position)
+		elif last_known_position.x > (self.global_position.x + 10):
+			sprite_node.flip_h = false
+			attack_sys.update_weapon_pos(last_known_position)
+	else:
+		if dir < 0.49:
+			sprite_node.flip_h = true
+			attack_sys.update_weapon_pos(self.global_position + move_direction)
+		elif dir > 0.51:
+			sprite_node.flip_h = false
+			attack_sys.update_weapon_pos(self.global_position + move_direction)
 #endregion

@@ -24,10 +24,12 @@ func can_attack_after() -> float:
 		return max(0.0, weapon.return_duration - return_timer)
 
 func update_weapon_pos(target: Vector2) -> void:
+	super.update_weapon_pos(target)
 	if !should_animate():
 		_set_weapon_sprite_pos(target)
 
 func attack(target: Vector2) -> void:
+	super.attack(target)
 	if wating_for_combo:
 		_start_attack_reverse()
 	if not is_attacking:
@@ -35,6 +37,7 @@ func attack(target: Vector2) -> void:
 		_start_attack(target)
 
 func handle_attack_animation(delta: float, target: Vector2) -> void:
+	super.handle_attack_animation(delta, target)
 	if weapon is Weapon and weapon.attack_types.has(Weapon.AttackType.Sword):
 		if wating_for_combo:
 			combo_timer += delta

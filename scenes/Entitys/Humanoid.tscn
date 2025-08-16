@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://caunnf0yk38sa"]
+[gd_scene load_steps=31 format=3 uid="uid://caunnf0yk38sa"]
 
 [ext_resource type="Script" uid="uid://bkfxwylrflii6" path="res://scenes/Entitys/Humanoid.gd" id="1_cfd02"]
 [ext_resource type="Texture2D" uid="uid://b4fphsxnki1fr" path="res://asserts/NPC-Creatures/Enemys-NPC/Skelly/skelly.png" id="2_dfvvk"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cidnwdapshjip" path="res://asserts/Items/Weapons/Swords/sword_iron.png" id="3_10tgo"]
 [ext_resource type="Resource" uid="uid://ppl3gscwyww8" path="res://resources/Items/Weapons/Swords/IronSword.tres" id="3_ly84v"]
 [ext_resource type="Texture2D" uid="uid://ccyt3djhmp8g2" path="res://asserts/NPC-Creatures/Enemys-NPC/Skelly/skelly_hand.png" id="4_kwon8"]
+[ext_resource type="Texture2D" uid="uid://cen6m5pducvue" path="res://asserts/Effects/attacks/swipe00.png" id="7_pbmy0"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m7we7"]
 atlas = ExtResource("2_dfvvk")
@@ -175,6 +176,9 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_h3tee"]
+atlas = ExtResource("7_pbmy0")
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_10tgo"]
 radius = 9.0
 
@@ -185,7 +189,7 @@ motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_cfd02")
 nav_agent = NodePath("NavigationAgent2D")
-type_name = "skelly"
+type_name = "humanoid"
 sprite_frames = ExtResource("2_kwon8")
 in_hand_item = ExtResource("3_ly84v")
 
@@ -206,7 +210,8 @@ animation = &"run"
 offset = Vector2(0, -6)
 
 [node name="Effect" type="Sprite2D" parent="."]
-visible = false
+rotation = -1.5708
+texture = SubResource("AtlasTexture_h3tee")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_10tgo")

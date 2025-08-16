@@ -3,7 +3,8 @@ class_name Weapon extends Item
 enum AttackType {
 	Sword
 }
-
+## CoolDown for AI
+@export var cooldown: float
 @export var attack_condition: AttackCondition
 @export var attack_types: Array[AttackType]
 @export var attack_effect_texture: Texture

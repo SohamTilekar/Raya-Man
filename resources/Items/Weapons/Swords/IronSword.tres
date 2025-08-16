@@ -9,7 +9,10 @@
 [sub_resource type="Resource" id="Resource_r1q0c"]
 script = ExtResource("1_2m73p")
 input_action = "Click"
-precidence = 1024
+precidence = 0.0
+min_dist_frm_target = 16.0
+max_dist_frm_target = 64.0
+movement = 1
 metadata/_custom_type_script = "uid://bqkhguyw6ngwh"
 
 [sub_resource type="Resource" id="Resource_yumls"]
@@ -28,6 +31,7 @@ metadata/_custom_type_script = "uid://dym4c1ohs683h"
 
 [resource]
 script = ExtResource("4_y282b")
+cooldown = 2.0
 attack_condition = SubResource("Resource_r1q0c")
 attack_types = Array[int]([0])
 attack_effect_texture = ExtResource("3_fsknb")
