@@ -1,6 +1,17 @@
 class_name Attack extends RefCounted
+enum AttackType {
+	Sword
+}
+enum MovementType {
+	None,
+	Sword_Sorrund_target
+}
 
-var attack_condition: AttackCondition = null
+@export var attack_condition: AttackCondition = null
+@export var cooldown_range: Vector2 = Vector2(NAN, NAN)
+@export var movement: MovementType = MovementType.Sword_Sorrund_target
+@export var defence_dist_min: float = NAN
+@export var defence_dist_max: float = NAN
 
 func get_attack_condition() -> AttackCondition:
 	return attack_condition
@@ -20,6 +31,10 @@ var weapon: Weapon = null
 func set_weapon(new_weapon: Weapon):
 	self.weapon = new_weapon
 	attack_condition = new_weapon.attack_condition
+	cooldown_range = new_weapon.cooldown_range
+	movement = new_weapon.movement
+	defence_dist_min = new_weapon.defence_dist_min
+	defence_dist_max = new_weapon.defence_dist_max
 
 func get_weapon() -> Weapon:
 	return weapon

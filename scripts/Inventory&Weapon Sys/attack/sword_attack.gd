@@ -38,7 +38,7 @@ func attack(target: Vector2) -> void:
 
 func handle_attack_animation(delta: float, target: Vector2) -> void:
 	super.handle_attack_animation(delta, target)
-	if weapon is Weapon and weapon.attack_types.has(Weapon.AttackType.Sword):
+	if weapon is Weapon and weapon.attack_types.has(Attack.AttackType.Sword):
 		if wating_for_combo:
 			combo_timer += delta
 			var ct = combo_timer / weapon.combo_lifespan

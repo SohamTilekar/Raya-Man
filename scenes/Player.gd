@@ -93,8 +93,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	var selected_attack: String = ""
 	var precidence: float = -INF
 	for attack in attacks:
-		if attacks[attack].condition_matches(event, get_local_mouse_position()):
-			if precidence < attacks[attack].precidence:
+		if attacks[attack].attack_condition.condition_matches(event, get_local_mouse_position()):
+			if precidence < attacks[attack].attack_condition.precidence:
 				selected_attack = attack
 	if selected_attack != "":
 		attack_sys.trigger_attack(selected_attack, get_global_mouse_position())

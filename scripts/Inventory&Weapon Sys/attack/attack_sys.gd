@@ -10,7 +10,7 @@ func set_weapon(new_weapon: Weapon, target: Vector2):
 	if weapon:
 		for type in weapon.attack_types:
 			match type:
-				Weapon.AttackType.Sword:
+				Attack.AttackType.Sword:
 					unregister_attack("sword")
 		if weapon.attack_effect_texture:
 			effect_sprite.texture = null
@@ -20,7 +20,7 @@ func set_weapon(new_weapon: Weapon, target: Vector2):
 	if weapon:
 		for type in weapon.attack_types:
 			match type:
-				Weapon.AttackType.Sword:
+				Attack.AttackType.Sword:
 					var sword_attack := SwordAttack.new()
 					register_attack("sword", sword_attack)
 		if weapon.attack_effect_texture:
@@ -89,12 +89,12 @@ func unregister_attack(name: String) -> void:
 	attacks.erase(name)
 
 # Return Array of currently available attacks
-func get_available_attacks() -> Dictionary[String, AttackCondition]:
-	var available: Dictionary[String, AttackCondition] = {}
+func get_available_attacks() -> Dictionary[String, Attack]:
+	var available: Dictionary[String, Attack] = {}
 	for name in attacks:
 		var attack = attacks[name]
 		if attack.can_attack():
-			available[name] = attack.get_attack_condition()
+			available[name] = attack
 	return available
 
 # Trigger a specific attack if possible
@@ -106,6 +106,9 @@ func trigger_attack(name: String, target: Vector2) -> void:
 	var attack: Attack = attacks[name]
 	if attack.can_attack():
 		attack.attack(target)
+
+func get_best_attack(_user: Vector2, _target: Vector2, _has_los: bool, _vel: Vector2) -> String:
+	return ""
 
 # Update weapon position for specific attack types
 func update_weapon_pos(target: Vector2) -> void:
