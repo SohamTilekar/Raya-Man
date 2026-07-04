@@ -17,3 +17,5 @@ class_name Weapon extends Item
 @export var attack_duration: float = NAN
 @export var combo_lifespan: float = NAN # for sword
 @export var return_duration: float = NAN
+@export var damage: float = 15.0
+

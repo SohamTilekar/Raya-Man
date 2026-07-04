@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://c2hvpbek3msa4"]
+
+[ext_resource type="Script" path="res://scenes/UI/HUD.gd" id="1_hudgd"]
+
+[node name="HUD" type="CanvasLayer" unique_id=1436340401]
+script = ExtResource("1_hudgd")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=356382866]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_bottom = 142.0
+grow_horizontal = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1750207549]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 6
+
+[node name="HealthContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=2009835766]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HealthContainer" unique_id=165493670]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "HP"
+
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/HealthContainer" unique_id=472167372]
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="ManaContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=178951570]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ManaContainer" unique_id=195663165]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "MP"
+
+[node name="ManaBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/ManaContainer" unique_id=317746956]
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="StaminaContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1508209063]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/StaminaContainer" unique_id=447273549]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "ST"
+
+[node name="StaminaBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/StaminaContainer" unique_id=853313673]
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="LevelLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=2041819035]
+layout_mode = 2
+text = "LEVEL: 1"

@@ -8,15 +8,15 @@ This master checklist is designed to guide the development of the game piece by 
 *Goal: Ensure the player can move, attack, break tools, collect loot, and fight basic enemies before adding any complex AI.*
 
 ### 1.1 Player & UI Setup
-- `[ ]` Add `health` (float) and `max_health` (float) to `Player.gd`.
-- `[ ]` Add `mana` (float) and `max_mana` (float) to `Player.gd`.
-- `[ ]` Add `stamina` (float) and `max_stamina` (float) to `Player.gd`.
-- `[ ]` Add `experience` (int) and `level` (int) variables.
-- `[ ]` Create `scenes/UI/HUD.tscn`.
-- `[ ]` Implement Health Bar UI component.
-- `[ ]` Implement Mana Bar UI component.
-- `[ ]` Implement Stamina Bar UI component.
-- `[ ]` Connect Player stat change signals to HUD bars.
+- `[x]` Add `health` (float) and `max_health` (float) to `Player.gd`.
+- `[x]` Add `mana` (float) and `max_mana` (float) to `Player.gd`.
+- `[x]` Add `stamina` (float) and `max_stamina` (float) to `Player.gd`.
+- `[x]` Add `experience` (int) and `level` (int) variables.
+- `[x]` Create `scenes/UI/HUD.tscn`.
+- `[x]` Implement Health Bar UI component.
+- `[x]` Implement Mana Bar UI component.
+- `[x]` Implement Stamina Bar UI component.
+- `[x]` Connect Player stat change signals to HUD bars.
 
 ### 1.2 Durability & Gathering Mechanics
 - `[ ]` Open `scripts/Inventory&Weapon Sys/itemRes.gd`. Add `max_durability`, `current_durability`, and `is_breakable` exports.

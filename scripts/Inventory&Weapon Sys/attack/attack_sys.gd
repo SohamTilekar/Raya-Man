@@ -12,7 +12,7 @@ func set_weapon(new_weapon: Weapon, target: Vector2):
 			match type:
 				Attack.AttackType.Sword:
 					unregister_attack("sword")
-		if weapon.attack_effect_texture:
+		if weapon.attack_effect_texture and effect_sprite:
 			effect_sprite.texture = null
 
 	weapon = new_weapon
@@ -23,7 +23,7 @@ func set_weapon(new_weapon: Weapon, target: Vector2):
 				Attack.AttackType.Sword:
 					var sword_attack := SwordAttack.new()
 					register_attack("sword", sword_attack)
-		if weapon.attack_effect_texture:
+		if weapon.attack_effect_texture and effect_sprite:
 			effect_sprite.texture = AtlasTexture.new()
 			effect_sprite.texture.atlas = weapon.attack_effect_texture
 	update_weapon_pos(target)

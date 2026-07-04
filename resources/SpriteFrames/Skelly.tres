@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=22 format=3 uid="uid://c55aw6bp02xnq"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://c55aw6bp02xnq"]
 
 [ext_resource type="Texture2D" uid="uid://b4fphsxnki1fr" path="res://asserts/NPC-Creatures/Enemys-NPC/Skelly/skelly.png" id="1_e5q57"]
 
@@ -94,7 +94,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_kwon8")
 }],
-"loop": false,
+"loop": 0,
 "name": &"death",
 "speed": 5.0
 }, {
@@ -102,7 +102,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ly84v")
 }],
-"loop": false,
+"loop": 0,
 "name": &"hurt",
 "speed": 5.0
 }, {
@@ -110,7 +110,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_pbmy0")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 0.0
 }, {
@@ -139,7 +139,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4pv86")
 }],
-"loop": true,
+"loop": 1,
 "name": &"run",
 "speed": 5.0
 }, {
@@ -165,7 +165,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_vbcwu")
 }],
-"loop": false,
+"loop": 0,
 "name": &"spawn",
 "speed": 5.0
 }]

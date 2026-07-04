@@ -1,4 +1,4 @@
-extends CharacterBody2D
+extends BaseEntity
 
 # CONSTANTS & SIGNALS
 
@@ -7,6 +7,10 @@ const RUN_SPEED: float = 150.0
 
 signal player_moved_vel(vel: Vector2)
 signal player_moved_pos(pos: Vector2)
+signal mana_changed(curr: float, max_val: float)
+signal stamina_changed(curr: float, max_val: float)
+signal level_changed(lvl: int)
+signal xp_changed(xp: int)
 
 # EXPORTS & NODES
 
@@ -24,13 +28,42 @@ var last_vec: Vector2 = Vector2.ZERO
 var in_hand_item: Item = null
 var attack_sys: AttackSys = AttackSys.new()
 
+func is_player_node() -> bool:
+	return true
+
+func _die() -> void:
+	print("Player died! Respawning...")
+	current_health = max_health
+
+@export var max_mana: float = 50.0
+@onready var current_mana: float = max_mana:
+	set(val):
+		current_mana = clamp(val, 0.0, max_mana)
+		mana_changed.emit(current_mana, max_mana)
+
+@export var max_stamina: float = 80.0
+@onready var current_stamina: float = max_stamina:
+	set(val):
+		current_stamina = clamp(val, 0.0, max_stamina)
+		stamina_changed.emit(current_stamina, max_stamina)
+
+@export var level: int = 1:
+	set(val):
+		level = val
+		level_changed.emit(level)
+
+var experience: int = 0:
+	set(val):
+		experience = val
+		xp_changed.emit(experience)
+
 # READY
 
 func _ready() -> void:
-	player_inventory.init_inventory(inventory)
 	attack_sys.set_user_sprite($Character)
 	attack_sys.set_weapon_sprite(item_sprite)
 	attack_sys.set_effect_sprite(effect_sprite)
+	player_inventory.init_inventory(inventory)
 
 # INVENTORY HAND UPDATE
 
@@ -53,8 +86,8 @@ func _physics_process(delta: float) -> void:
 	handle_movement(delta)
 	attack_sys.handle_attack_animation(delta, get_global_mouse_position())
 
-func _process(_delta: float) -> void:
-	queue_redraw()
+func _process(delta: float) -> void:
+	super(delta)
 
 # MOVEMENT HANDLING
 

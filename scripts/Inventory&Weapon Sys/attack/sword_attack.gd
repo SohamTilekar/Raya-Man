@@ -35,6 +35,44 @@ func attack(target: Vector2) -> void:
 	if not is_attacking:
 		_set_weapon_sprite_pos(target)
 		_start_attack(target)
+	_perform_hit_check(target)
+
+func _perform_hit_check(target: Vector2) -> void:
+	if not usr_sprite:
+		return
+	var attacker = usr_sprite.get_parent()
+	if not attacker or not attacker is CharacterBody2D:
+		return
+
+	var dir = (target - attacker.global_position).normalized()
+	var attack_center = attacker.global_position + dir * weapon.attack_distance
+
+	# Setup debug visualization in BaseEntity
+	attacker.debug_attack_center = attack_center
+	attacker.debug_attack_radius = weapon.attack_radius
+	attacker.debug_attack_timer = 0.25
+	attacker.queue_redraw()
+
+	var space_state = attacker.get_world_2d().direct_space_state
+	if not space_state:
+		return
+
+	var query = PhysicsShapeQueryParameters2D.new()
+	var circle = CircleShape2D.new()
+	circle.radius = weapon.attack_radius
+	query.shape = circle
+	query.transform = Transform2D(0.0, attack_center)
+	query.collision_mask = 0xFFFFFFFF
+
+	var results = space_state.intersect_shape(query)
+	for result in results:
+		var hit_collider = result.collider
+		if hit_collider and hit_collider != attacker and hit_collider is BaseEntity:
+			var attacker_is_player = attacker.has_method("is_player_node")
+			var target_is_player = hit_collider.has_method("is_player_node")
+			if attacker_is_player != target_is_player:
+				var damage_amount = weapon.damage if "damage" in weapon else 15.0
+				hit_collider.take_damage(damage_amount)
 
 func handle_attack_animation(delta: float, target: Vector2) -> void:
 	super.handle_attack_animation(delta, target)
@@ -43,21 +81,17 @@ func handle_attack_animation(delta: float, target: Vector2) -> void:
 			combo_timer += delta
 			var ct = combo_timer / weapon.combo_lifespan
 			if ct > 1.0:
-				return_timer += delta
-				var rt = return_timer / weapon.return_duration
-				if rt > 1.0:
-					return_timer = 0.0
-					combo_timer = 0.0
-					wating_for_combo = false
-					_set_weapon_sprite_pos(target)
-				else:
-					var dir = (target - usr_sprite.global_position).normalized()
-					weapon_sprite.rotation = Utils.lerp_angle_longest(attack_rotation_end + PI/6 if usr_sprite.flip_h else attack_rotation_end - PI/6, _get_weapon_rot(dir), rt)
-					weapon_sprite.global_position = usr_sprite.global_position + \
-						Vector2.from_angle(Utils.lerp_angle_longest(attack_angle_end + PI/6 if usr_sprite.flip_h else attack_angle_end - PI/6, _get_weapon_pos_dir(dir).angle(), rt)) * weapon.attack_radius
+				combo_timer = 0.0
+				wating_for_combo = false
+				_set_weapon_sprite_pos(target)
 			else:
-				weapon_sprite.rotation = lerp(attack_rotation_end, attack_rotation_end + PI/6 if usr_sprite.flip_h else attack_rotation_end - PI/6, ct)
-				weapon_sprite.global_position = usr_sprite.global_position + Vector2.from_angle(lerp(attack_angle_end, attack_angle_end + PI/6 if usr_sprite.flip_h else attack_angle_end - PI/6, ct)) * weapon.attack_radius
+				var dir = (target - usr_sprite.global_position).normalized()
+				var target_rot = _get_weapon_rot(dir)
+				var target_pos_dir = _get_weapon_pos_dir(dir)
+				# Smoothly lerp back to default stance immediately after swing
+				weapon_sprite.rotation = Utils.lerp_angle_longest(attack_rotation_end, target_rot, ct)
+				weapon_sprite.global_position = usr_sprite.global_position + \
+					Vector2.from_angle(Utils.lerp_angle_longest(attack_angle_end, target_pos_dir.angle(), ct)) * weapon.attack_radius
 			return
 		if not is_attacking:
 			return

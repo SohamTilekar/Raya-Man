@@ -220,6 +220,10 @@ func _physics_process(delta: float) -> void:
 		State.CHASE: _behave_chase(delta)
 		State.SEARCH: _behave_search(delta)
 
+	var anim_target = chase_target.global_position if chase_target else global_position + move_direction
+	attack_sys.handle_attack_animation(delta, anim_target)
+	attack_sys.update_weapon_pos(anim_target)
+
 	_move_and_apply_velocity(delta)
 	_check_stuck(delta)
 

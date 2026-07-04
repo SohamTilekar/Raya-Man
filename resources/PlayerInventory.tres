@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Inv" load_steps=6 format=3 uid="uid://svdk4buk17u"]
+[gd_resource type="Resource" script_class="Inv" format=3 uid="uid://svdk4buk17u"]
 
 [ext_resource type="Script" uid="uid://c0rgkphh2vhsc" path="res://scripts/Inventory&Weapon Sys/inventorySlot.gd" id="1_5xd7a"]
 [ext_resource type="Resource" uid="uid://ppl3gscwyww8" path="res://resources/Items/Weapons/Swords/IronSword.tres" id="2_t82vs"]
@@ -29,5 +29,4 @@ special_items = Dictionary[String, ExtResource("1_5xd7a")]({
 "fast_inv:7": null,
 "fast_inv:8": null
 })
-special_data = {}
 metadata/_custom_type_script = "uid://b4e8bes3akm43"
