@@ -1,3 +1,25 @@
-# Godot 4+ specific ignores
+# Godot-specific ignores
 .godot/
 /android/
+/export/
+
+# Mono/C# build and project artifacts
+.mono/
+bin/
+obj/
+*.csproj.user
+*.sln.DotSettings.user
+
+# IDE-specific ignores
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
